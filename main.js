@@ -4,6 +4,7 @@ const iconv = require('iconv-lite');
 const moment = require('moment-timezone');
 const { Client } = require("@notionhq/client");
 
+const utils = require('./utils');
 
 if (process.argv.length !== 5) {
   console.log('usage: node main.js notion_token page_id filename');
@@ -49,7 +50,7 @@ const COLUMNS = [
         {
           type: 'text',
           text: {
-            content: 'imported from booklog.jp',
+            content: `${FILENAME}`,
           },
         },
       ],
@@ -71,6 +72,7 @@ const COLUMNS = [
         '発行年': { type: 'number', number: { format: 'number' }, },
         'ジャンル': { type: 'select', select: { options: [] }, },
         'ページ数': { type: 'number', number: { format: 'number' }, },
+        'link': { type: 'url', url: {} },
       },
     })
       .then(response => {
@@ -129,6 +131,9 @@ const COLUMNS = [
           }
           if (row['読了日'] !== '') {
             properties['読了日'] = { date: { start: moment.tz(row['読了日'], 'YYYY-MM-DD HH:mm:ss', 'Asia/Tokyo').toISOString(), } };
+          }
+          if (row['13桁ISBN'] !== '') {
+            properties['link'] = { url: `http://www.amazon.co.jp/dp/${utils.toISBN10(row['13桁ISBN'])}` }
           }
 
           const response = await notion.pages.create({ parent: { database_id }, properties })
