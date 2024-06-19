@@ -1,12 +1,23 @@
-require('dotenv').config();
 const fs = require('fs').promises;
 const parse = require('csv-parse/sync');
 const iconv = require('iconv-lite');
 const moment = require('moment-timezone');
 const { Client } = require("@notionhq/client");
-const { exit } = require('process');
 
-const notion = new Client({ auth: process.env.NOTION_TOKEN, });
+
+if (process.argv.length !== 5) {
+  console.log('usage: node main.js notion_token page_id filename');
+  console.log('');
+  console.log('Example usage:');
+  console.log('  node main.js xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx filename.csv');
+  process.exit(-1);
+}
+
+const NOTION_TOKEN = process.argv[2];
+const PAGE_ID = process.argv[3];
+const FILENAME = process.argv[4];
+
+const notion = new Client({ auth: NOTION_TOKEN, });
 
 // CSV のカラム名
 const COLUMNS = [
@@ -30,12 +41,10 @@ const COLUMNS = [
 ];
 
 (async () => {
-  const page_id = '1e06aed0944342e2acdb99e1cffbbc93';
-
   // データベースを作成する
   const database_id = await (() => {
     return notion.databases.create({
-      parent: { page_id },
+      parent: { page_id: PAGE_ID },
       title: [
         {
           type: 'text',
@@ -65,18 +74,17 @@ const COLUMNS = [
       },
     })
       .then(response => {
-        console.log('Database created successfully:', response);
+        console.log('create database:', response.id);
         return response.id;
       })
   })();;
 
   if (!database_id) {
-    exit(1);
+    process.exit(-1);
   }
 
   // CSV ファイルからNotionにインポートする。
-  fs.readFile('./booklog20240619014420.csv')
-    // const properties = fs.readFile('./booklog-sample.csv')
+  fs.readFile(FILENAME)
     .then(async (fileContent) => {
       const utf8Content = iconv.decode(fileContent, 'Shift_JIS');
       const rows = parse.parse(utf8Content, {
