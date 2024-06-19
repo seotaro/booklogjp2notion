@@ -100,16 +100,22 @@ const COLUMNS = [
 
         try {
           const properties = {
-            'サービスID': { number: Number(row['サービスID']), },
             'アイテムID': { rich_text: [{ text: { content: row['アイテムID'] } }] },
-            '13桁ISBN': { number: Number(row['13桁ISBN']), },
             'レビュー': { rich_text: [{ text: { content: row['レビュー'] } }] },
             '読書メモ(非公開)': { rich_text: [{ text: { content: row['読書メモ(非公開)'] } }] },
             'タイトル': { title: [{ text: { content: row['タイトル'] } }] },
             '作者名': { rich_text: [{ text: { content: row['作者名'] } }] },
             '出版社名': { rich_text: [{ text: { content: row['出版社名'] } }] },
-            '発行年': { number: Number(row['発行年']), },
-            'ページ数': { number: Number(row['ページ数']), },
+          }
+
+          if (row['サービスID'] !== '') {
+            properties['サービスID'] = { number: Number(row['サービスID']), };
+          }
+          if (row['発行年'] !== '') {
+            properties['発行年'] = { number: Number(row['発行年']), };
+          }
+          if (row['ページ数'] !== '') {
+            properties['ページ数'] = { number: Number(row['ページ数']), };
           }
           if (row['ジャンル'] !== '') {
             properties['ジャンル'] = { select: { name: row['ジャンル'] } };
@@ -133,7 +139,11 @@ const COLUMNS = [
             properties['読了日'] = { date: { start: moment.tz(row['読了日'], 'YYYY-MM-DD HH:mm:ss', 'Asia/Tokyo').toISOString(), } };
           }
           if (row['13桁ISBN'] !== '') {
-            properties['link'] = { url: `http://www.amazon.co.jp/dp/${utils.toISBN10(row['13桁ISBN'])}` }
+            properties['13桁ISBN'] = { number: Number(row['13桁ISBN']), };
+            // properties['link'] = { url: `http://www.amazon.co.jp/dp/${utils.toISBN10(row['13桁ISBN'])}` };
+          }
+          if (row['アイテムID'] !== '') {
+            properties['link'] = { url: `http://www.amazon.co.jp/dp/${row['アイテムID']}` };
           }
 
           const response = await notion.pages.create({ parent: { database_id }, properties })
