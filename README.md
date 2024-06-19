@@ -35,6 +35,6 @@ yarn
 node main.js notion_token page_id filename 
 ```
 
-notion_token: インテグレーションシークレット
-page_id: 作成したページのURLにある
-filename: ブクログからエクスポートしたcsvファイル
+- notion_token: インテグレーションシークレット
+- page_id: 作成したページのURLにある
+- filename: ブクログからエクスポートしたcsvファイル
