@@ -1,7 +1,7 @@
 # booklog2notion
 
 [ブクログ](https://booklog.jp/)から[Notion](https://www.notion.so/ja-jp)にインポートする。
-ISBN13コードがあればamazonのリンクを補う。
+amazonのリンクを補う。
 
 ## Requirements
 
