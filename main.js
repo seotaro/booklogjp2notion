@@ -143,7 +143,7 @@ const COLUMNS = [
             // properties['link'] = { url: `http://www.amazon.co.jp/dp/${utils.toISBN10(row['13桁ISBN'])}` };
           }
           if (row['アイテムID'] !== '') {
-            properties['link'] = { url: `http://www.amazon.co.jp/dp/${row['アイテムID']}` };
+            properties['link'] = { url: `https://www.amazon.co.jp/dp/${row['アイテムID']}` };
           }
 
           const response = await notion.pages.create({ parent: { database_id }, properties })
